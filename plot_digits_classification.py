@@ -65,6 +65,13 @@ def hyperparam_tuning(X_train,y_train,X_dev,y_dev,X_test,y_test,gamma_list, c_li
 
     df = pd.DataFrame(hyperparam)
     print(tabulate(df, headers='keys', tablefmt='psql'))
+    
+    # print min, max, mean, median of accuracies
+    cols = ['train_acc','test_acc','dev_acc']
+    #df[cols].mean()
+    print(df[['train_acc','test_acc','dev_acc']].describe())
+
+    
     best_hyperparam = df.iloc[df['test_acc'].argmax()]
     return best_hyperparam
 
@@ -158,13 +165,14 @@ def main():
     # Split size
     train_split = 0.7
     dev_split = 0.15
+    test_split = 0.15
 
     # Select image resolution ( Options "NO_CHANGE","4*4","16*16","32*32")
-    resolution ={"NO_CHANGE":8,"4*4":4,"16*16":16,"32*32":32}      
+    resolution ={"NO_CHANGE":8}      
     
     # Hyperparameter list for iteration
-    gamma_list = [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1]
-    c_list = [0.1, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    gamma_list = [0.00005,0.0001,0.0005,0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1]
+    c_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     process(train_split,dev_split, gamma_list,c_list, resolution)
     
 
