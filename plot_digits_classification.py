@@ -162,7 +162,7 @@ def process(train_split,dev_split,gamma_list,c_list,resolution):
         plt.show()
 
 def main():
-    # Split size
+    # Split size ( 0.8 to 0.7)
     train_split = 0.7
     dev_split = 0.15
     test_split = 0.15
