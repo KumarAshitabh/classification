@@ -24,6 +24,7 @@ from skimage.transform import resize
 from tabulate import tabulate
 import warnings
 warnings.filterwarnings("ignore")
+from sklearn.metrics import accuracy_score
 
 
 
@@ -81,9 +82,6 @@ def process(train_split,dev_split):
             X_dev, y_dev, test_size=(1 - train_split), shuffle=True, random_state=1
         )
 
-    print(X_train.shape), print(y_train.shape)
-    print(X_dev.shape), print(y_dev.shape)
-    print(X_test.shape), print(y_test.shape)
 
         # Create a classifier: a support vector classifier
     clf = tree.DecisionTreeClassifier()
@@ -96,7 +94,7 @@ def process(train_split,dev_split):
 
         # Predict the value of the digit on the test subset
     predicted = clf.predict(X_test)
-
+    accuracy=accuracy_score(y_test, predicted)
     print(
             f"Classification report for classifier {clf}:\n"
             f"{metrics.classification_report(y_test, predicted)}\n"
@@ -109,19 +107,23 @@ def process(train_split,dev_split):
     disp = metrics.ConfusionMatrixDisplay.from_predictions(y_test, predicted)
     disp.figure_.suptitle("Confusion Matrix")
     print(f"Confusion matrix:\n{disp.confusion_matrix}")
-
     plt.show()
+    return accuracy
 
 def main():
     # Split size ( 0.8 to 0.7)
     split_list=[0.75,0.80,0.85]
+    overall_accuracy = []
     for g in split_list:
         train_split = g
-        dev_split = (1-g)
-        
-
-        process(train_split,dev_split)
+        dev_split = (1-g)  
+        accuracy = process(train_split,dev_split)
+        print(accuracy)
+        overall_accuracy.append({"accuracy":accuracy})
     
+    df = pd.DataFrame(overall_accuracy)
+    print(tabulate(df, headers='keys', tablefmt='psql'))
+    print(df[['accuracy']].describe())
 
 if __name__ == "__main__":
     main()
