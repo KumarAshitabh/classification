@@ -1,8 +1,9 @@
 # examples of unit test cases 
 import pytest
-from myapp.plot_digits_classification_decisiontree import process
+from ..myapp.plot_digits_classification_decisiontree import process
 from collections import Counter
 
+    
 def test_classifier_not_completely_biased():
     overall_accuracy = []
     train_split = 0.75
