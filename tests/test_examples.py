@@ -1,13 +1,16 @@
-# examples of unit test cases
-import os
-import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
- 
-import plot_digits_classification_decisiontree
+# examples of unit test cases 
+import pytest
+from myapp.plot_digits_classification_decisiontree import process
+from collections import Counter
 
 def test_classifier_not_completely_biased():
-    print("hello")
+    overall_accuracy = []
+    train_split = 0.75
+    dev_split = (1-0.75)  
+    predicted = process(train_split,dev_split)
+    assert len(Counter(predicted).keys()) == 10
+
 
     
 def test_classifier_predicts_all_classes():
-    print("hello")   
+    assert 1 == 1   
