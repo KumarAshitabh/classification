@@ -43,7 +43,7 @@ from collections import Counter
 # them using :func:`matplotlib.pyplot.imread`.
 
 
-def process(train_split,dev_split):
+def process_decisiontree(split):
     digits = datasets.load_digits()
     
 
@@ -76,13 +76,10 @@ def process(train_split,dev_split):
     data = pd.DataFrame(StandardScaler().fit_transform(data))
 
         # Split data into  train and test
-    split = 1-train_split
-    X_train, X_dev, y_train, y_dev = train_test_split(
+    X_train, X_test, y_train, y_test = train_test_split(
             data, digits.target, test_size=split, shuffle=True, random_state=1
         )
-    X_test, X_dev, y_test, y_dev = train_test_split(
-            X_dev, y_dev, test_size=(1 - train_split), shuffle=True, random_state=1
-        )
+
 
 
         # Create a classifier: a support vector classifier
@@ -116,22 +113,21 @@ def process(train_split,dev_split):
     disp.figure_.suptitle("Confusion Matrix")
     print(f"Confusion matrix:\n{disp.confusion_matrix}")
     plt.show()
-    return predicted
+    accuracy = metrics.classification_report(y_test, clf.predict(X_test), output_dict=True)['accuracy']
+    return predicted,accuracy
 
 def main():
     # Split size ( 0.8 to 0.7)
-    split_list=[0.75,0.80,0.85]
+    split_list=[0.1,0.15,0.2]
     overall_accuracy = []
     for g in split_list:
-        train_split = g
-        dev_split = (1-g)  
-        accuracy = process(train_split,dev_split)
+        predicted,accuracy = process_decisiontree(g)
         print(accuracy)
-        #overall_accuracy.append({"accuracy":accuracy})
+        overall_accuracy.append({"Split":split_list.index(g)+1,"DecisionTree_accuracy":accuracy})
     
-    #df = pd.DataFrame(overall_accuracy)
-    #print(tabulate(df, headers='keys', tablefmt='psql'))
-    #print(df[['accuracy']].describe())
+    df = pd.DataFrame(overall_accuracy)
+    print(tabulate(df, headers='keys', tablefmt='psql'))
+
 
 if __name__ == "__main__":
     main()

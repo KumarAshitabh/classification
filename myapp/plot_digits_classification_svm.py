@@ -42,7 +42,7 @@ warnings.filterwarnings("ignore")
 # them using :func:`matplotlib.pyplot.imread`.
 
 # Hyperparameter tuning
-def hyperparam_tuning(X_train,y_train,X_dev,y_dev,X_test,y_test,gamma_list, c_list):
+def hyperparam_tuning(X_train,y_train,X_test,y_test,gamma_list, c_list):
     hyperparam = []
     lst_accuracy = []
     for g in gamma_list:
@@ -58,8 +58,7 @@ def hyperparam_tuning(X_train,y_train,X_dev,y_dev,X_test,y_test,gamma_list, c_li
                 {
                     "hyperparams": {"gamma": g, "C": c},
                     "train_acc": metrics.classification_report(y_train, clf_.predict(X_train), output_dict=True)['accuracy'],
-                    "test_acc": metrics.classification_report(y_test, clf_.predict(X_test), output_dict=True)['accuracy'],
-                    "dev_acc": metrics.classification_report(y_dev, clf_.predict(X_dev), output_dict=True)['accuracy']
+                    "test_acc": metrics.classification_report(y_test, clf_.predict(X_test), output_dict=True)['accuracy']
                 }
             )
 
@@ -67,15 +66,15 @@ def hyperparam_tuning(X_train,y_train,X_dev,y_dev,X_test,y_test,gamma_list, c_li
     print(tabulate(df, headers='keys', tablefmt='psql'))
     
     # print min, max, mean, median of accuracies
-    cols = ['train_acc','test_acc','dev_acc']
+    #cols = ['train_acc','test_acc']
     #df[cols].mean()
-    print(df[['train_acc','test_acc','dev_acc']].describe())
+    #print(df[['train_acc','test_acc']].describe())
 
     
     best_hyperparam = df.iloc[df['test_acc'].argmax()]
     return best_hyperparam
 
-def process(train_split,dev_split,gamma_list,c_list,resolution):
+def process_svm(split,gamma_list,c_list,resolution):
     digits = datasets.load_digits()
     for r in resolution:        
         print(f"Original Image shape  : {digits.images[0].shape}")
@@ -118,19 +117,14 @@ def process(train_split,dev_split,gamma_list,c_list,resolution):
         data = pd.DataFrame(StandardScaler().fit_transform(data))
 
         # Split data into  train and test
-        split = 1-train_split
-        X_train, X_dev, y_train, y_dev = train_test_split(
-            data, digits.target, test_size=split, shuffle=True, random_state=1
-        )
-        X_test, X_dev, y_test, y_dev = train_test_split(
-            X_dev, y_dev, test_size=(dev_split)/(1 - train_split), shuffle=True, random_state=1
-        )
+        X_train, X_test, y_train, y_test = train_test_split(
+                data, digits.target, test_size=split, shuffle=False)
+
 
         print(X_train.shape), print(y_train.shape)
-        print(X_dev.shape), print(y_dev.shape)
         print(X_test.shape), print(y_test.shape)
 
-        best_hyperparam = hyperparam_tuning(X_train,y_train,X_dev,y_dev,X_test,y_test,gamma_list, c_list)
+        best_hyperparam = hyperparam_tuning(X_train,y_train,X_test,y_test,gamma_list, c_list)
 
         print("Best hyperparam:\n", best_hyperparam)
 
@@ -158,23 +152,26 @@ def process(train_split,dev_split,gamma_list,c_list,resolution):
         disp = metrics.ConfusionMatrixDisplay.from_predictions(y_test, predicted)
         disp.figure_.suptitle("Confusion Matrix")
         print(f"Confusion matrix:\n{disp.confusion_matrix}")
-
         plt.show()
+        accuracy = metrics.classification_report(y_test, clf.predict(X_test), output_dict=True)['accuracy']
+        return predicted,accuracy
 
 def main():
-    # Split size ( 0.8 to 0.7)
-    train_split = 0.7
-    dev_split = 0.15
-    test_split = 0.15
-
     # Select image resolution ( Options "NO_CHANGE","4*4","16*16","32*32")
     resolution ={"NO_CHANGE":8}      
     
     # Hyperparameter list for iteration
     gamma_list = [0.00005,0.0001,0.0005,0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1]
     c_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    process(train_split,dev_split, gamma_list,c_list, resolution)
     
+    split_list=[0.1,0.15,0.2]
+    overall_accuracy = []
+    for g in split_list:
+        predicted,accuracy = process_svm(g, gamma_list,c_list, resolution)    
+        overall_accuracy.append({"Split":split_list.index(g)+1,"SVM_accuracy":accuracy})
+    
+    df = pd.DataFrame(overall_accuracy)
+    print(tabulate(df, headers='keys', tablefmt='psql'))
 
 if __name__ == "__main__":
     main()
