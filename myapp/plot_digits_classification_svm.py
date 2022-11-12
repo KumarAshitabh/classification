@@ -24,7 +24,7 @@ from skimage.transform import resize
 from tabulate import tabulate
 import warnings
 warnings.filterwarnings("ignore")
-
+import pickle
 
 
 ###############################################################################
@@ -136,6 +136,10 @@ def process_svm(split,gamma_list,c_list,resolution):
 
         # Learn the digits on the train subset
         clf.fit(X_train, y_train)
+        
+        # save the model to disk
+        filename = 'svm.sav'
+        pickle.dump(clf, open("model/"+filename, 'wb'))
 
         # Predict the value of the digit on the test subset
         predicted = clf.predict(X_test)

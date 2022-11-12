@@ -26,7 +26,7 @@ import warnings
 warnings.filterwarnings("ignore")
 from sklearn.metrics import accuracy_score
 from collections import Counter
-
+import pickle
 
 ###############################################################################
 # Digits dataset
@@ -94,9 +94,10 @@ def process_decisiontree(split):
         # Predict the value of the digit on the test subset
     predicted = clf.predict(X_test)
     accuracy=accuracy_score(y_test, predicted)
-    if len(Counter(predicted).keys()) == 10:
-            print("Pass")
-    print(Counter(predicted).values()) 
+    
+    # save the model to disk
+    filename = 'decisiontree.sav'
+    pickle.dump(clf, open("model/"+filename, 'wb'))
 
     
     
