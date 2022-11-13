@@ -1,7 +1,7 @@
 # mlops-22
 Take home quiz
 
-
+# Build and Run docker image for out Flask App
 sudo docker build --tag flask-docker-demo-app .
 sudo docker run --name flask-docker-demo-app -p 5000:5000 flask-docker-demo-app
 
@@ -9,5 +9,5 @@ sudo docker run --name flask-docker-demo-app -p 5000:5000 flask-docker-demo-app
 docker ps -a
 
 
-#To remove container for any code changes)
+# To remove container for any code changes)
 sudo docker rm flask-docker-demo-app
