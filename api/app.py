@@ -32,15 +32,35 @@ def sum():
 
 @app.route("/predict", methods=['POST'])
 def predict_digit():
-    file = request.files['image']
-    # Read the image via file.stream
+    #Process first image
+    file = request.files['image1']
     image = Image.open(file.stream)
     size = 64, 64
     image = image.resize(size, Image.ANTIALIAS)
     print("done loading")
     image = asarray(image)[:,:,0]
-    predicted = model.predict(image)
-    return {"y_predicted":int(predicted[0])}
+    #data = Image.fromarray(image)
+    #data.save('gfg_dummy_pic.png')
+    predicted1 = model.predict(image)
+
+    #Process 2nd image
+    file = request.files['image2']
+    image = Image.open(file.stream)
+    size = 64, 64
+    image = image.resize(size, Image.ANTIALIAS)
+    print("done loading")
+    image = asarray(image)[:,:,0]
+    #data = Image.fromarray(image)
+    #data.save('gfg_dummy_pic.png')
+    predicted2 = model.predict(image)
+
+    #Compare Predicted1 and predicted2
+    if int(predicted1[0]) == int(predicted2[0]):
+        return {"Message":"Both images not same"}
+    else:
+        return {"Message":"Both images not same"}
+
+    
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
