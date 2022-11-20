@@ -43,7 +43,7 @@ import pickle
 # them using :func:`matplotlib.pyplot.imread`.
 
 
-def process_decisiontree(split):
+def process_decisiontree(split,randomseed):
     digits = datasets.load_digits()
     
 
@@ -77,7 +77,7 @@ def process_decisiontree(split):
 
         # Split data into  train and test
     X_train, X_test, y_train, y_test = train_test_split(
-            data, digits.target, test_size=split, shuffle=True, random_state=1
+            data, digits.target, test_size=split, shuffle=True, random_state=randomseed
         )
 
 
@@ -115,7 +115,7 @@ def process_decisiontree(split):
     print(f"Confusion matrix:\n{disp.confusion_matrix}")
     plt.show()
     accuracy = metrics.classification_report(y_test, clf.predict(X_test), output_dict=True)['accuracy']
-    return predicted,accuracy
+    return predicted,accuracy,X_train,X_test
 
 def main():
     # Split size ( 0.8 to 0.7)

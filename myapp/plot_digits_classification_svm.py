@@ -74,7 +74,7 @@ def hyperparam_tuning(X_train,y_train,X_test,y_test,gamma_list, c_list):
     best_hyperparam = df.iloc[df['test_acc'].argmax()]
     return best_hyperparam
 
-def process_svm(split,gamma_list,c_list,resolution):
+def process_svm(split,gamma_list,c_list,resolution,randomseed):
     digits = datasets.load_digits()
     for r in resolution:        
         print(f"Original Image shape  : {digits.images[0].shape}")
@@ -118,7 +118,7 @@ def process_svm(split,gamma_list,c_list,resolution):
 
         # Split data into  train and test
         X_train, X_test, y_train, y_test = train_test_split(
-                data, digits.target, test_size=split, shuffle=False)
+                data, digits.target, test_size=split, random_state=randomseed)
 
 
         print(X_train.shape), print(y_train.shape)
@@ -158,7 +158,7 @@ def process_svm(split,gamma_list,c_list,resolution):
         print(f"Confusion matrix:\n{disp.confusion_matrix}")
         plt.show()
         accuracy = metrics.classification_report(y_test, clf.predict(X_test), output_dict=True)['accuracy']
-        return predicted,accuracy
+        return predicted,accuracy,X_train,X_test
 
 def main():
     # Select image resolution ( Options "NO_CHANGE","4*4","16*16","32*32")
