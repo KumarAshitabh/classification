@@ -1,5 +1,5 @@
 # mlops-22
-Take home quiz
+Final Exam
 
 # Build and Run docker image for our Flask App
 sudo docker build --tag flask-docker-demo-app .
